@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Harian Bintang RGB</title>
+    
+    <!-- Google Fonts: Quicksand for an aesthetic, soft, and modern look -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS for rapid styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Phosphor Icons for aesthetic icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind Config for Custom Colors (Soft RGB theme) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Quicksand', 'sans-serif'],
+                    },
+                    colors: {
+                        soft: {
+                            r: '#ffb3ba', // Soft Red/Pink
+                            g: '#baffc9', // Soft Green
+                            b: '#bae1ff', // Soft Blue
+                            y: '#ffffba'  // Soft Yellow
+                        }
+                    },
+                    animation: {
+                        'gradient-x':'gradient-x 15s ease infinite',
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                    },
+                    keyframes: {
+                        'gradient-x': {
+                            '0%, 100%': {
+                                'background-size': '200% 200%',
+                                'background-position': 'left center'
+                            },
+                            '50%': {
+                                'background-size': '200% 200%',
+                                'background-position': 'right center'
+                            },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar for aesthetic */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #bae1ff; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ffb3ba; }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        
+        .task-done { text-decoration: line-through; opacity: 0.6; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-soft-r via-soft-g to-soft-b animate-gradient-x min-h-screen text-slate-700 antialiased p-4 md:p-8 flex justify-center items-start">
+
+    <!-- Main Container -->
+    <main class="glass-panel w-full max-w-lg rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 md:p-8 mt-4 mb-10 transition-all duration-300">
+        
+        <!-- Header Section -->
+        <header class="text-center mb-8">
+            <h2 class="text-sm font-semibold tracking-widest text-slate-500 uppercase mb-1" id="greeting">Halo, Bintang!</h2>
+            <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-rose-400 via-emerald-400 to-sky-400 drop-shadow-sm">
+                Bintang RGB
+            </h1>
+            <p class="text-sm text-slate-500 mt-2 flex justify-center items-center gap-2">
+                <i class="ph ph-calendar-blank text-lg"></i>
+                <span id="currentDate">Memuat tanggal...</span>
+            </p>
+        </header>
+
+        <!-- Add Task Form -->
+        <form id="taskForm" class="bg-white/50 rounded-2xl p-4 mb-8 shadow-sm border border-white space-y-4">
+            <div class="flex flex-col sm:flex-row gap-3">
+                <div class="flex-1">
+                    <label class="text-xs font-semibold text-slate-500 ml-1 mb-1 block">Kegiatan</label>
+                    <input type="text" id="taskInput" required placeholder="Ngapain hari ini?" class="w-full bg-white/80 border-none rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-soft-b outline-none transition-all placeholder:text-slate-300 text-sm">
+                </div>
+                <div class="w-full sm:w-32">
+                    <label class="text-xs font-semibold text-slate-500 ml-1 mb-1 block">Jam</label>
+                    <input type="time" id="timeInput" required class="w-full bg-white/80 border-none rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-soft-g outline-none transition-all text-sm text-slate-600">
+                </div>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-3 items-end">
+                <div class="flex-1 w-full">
+                    <label class="text-xs font-semibold text-slate-500 ml-1 mb-1 block">Kategori</label>
+                    <select id="categoryInput" class="w-full bg-white/80 border-none rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-soft-r outline-none transition-all text-sm text-slate-600 appearance-none cursor-pointer">
+                        <option value="Rutinitas">🔄 Rutinitas</option>
+                        <option value="Hobi">🎨 Hobi</option>
+                        <option value="Penting">⭐ Penting</option>
+                        <option value="Santai">☕ Santai</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full sm:w-auto bg-gradient-to-r from-soft-r via-soft-g to-soft-b hover:opacity-90 text-slate-700 font-bold py-2.5 px-6 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 hover:scale-105 active:scale-95 text-sm">
+                    <i class="ph-bold ph-plus"></i> Tambah
+                </button>
+            </div>
+        </form>
+
+        <!-- Task List -->
+        <div>
+            <div class="flex justify-between items-end mb-4 px-1">
+                <h3 class="text-lg font-bold text-slate-700">Jadwal Hari Ini</h3>
+                <span id="taskCount" class="text-xs font-semibold bg-white px-3 py-1 rounded-full text-slate-500 shadow-sm">0/0 Selesai</span>
+            </div>
+            
+            <div id="taskList" class="space-y-3 min-h-[200px]">
+                <!-- Tasks will be injected here via JS -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // State management
+        let tasks = JSON.parse(localStorage.getItem('bintangRgbTasks')) || [];
+
+        // DOM Elements
+        const taskForm = document.getElementById('taskForm');
+        const taskInput = document.getElementById('taskInput');
+        const timeInput = document.getElementById('timeInput');
+        const categoryInput = document.getElementById('categoryInput');
+        const taskList = document.getElementById('taskList');
+        const taskCount = document.getElementById('taskCount');
+        const currentDateEl = document.getElementById('currentDate');
+        const greetingEl = document.getElementById('greeting');
+
+        // Setup Date and Greeting
+        function setupHeader() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            currentDateEl.textContent = now.toLocaleDateString('id-ID', options);
+
+            const hour = now.getHours();
+            let greeting = 'Selamat Malam';
+            if (hour >= 5 && hour < 12) greeting = 'Selamat Pagi';
+            else if (hour >= 12 && hour < 15) greeting = 'Selamat Siang';
+            else if (hour >= 15 && hour < 18) greeting = 'Selamat Sore';
+            
+            greetingEl.textContent = `${greeting}, Bintang! ✨`;
+        }
+
+        // Save to LocalStorage
+        function saveTasks() {
+            localStorage.setItem('bintangRgbTasks', JSON.stringify(tasks));
+        }
+
+        // Get color based on category to match RGB theme
+        function getCategoryColor(category) {
+            switch(category) {
+                case 'Penting': return 'bg-rose-100 text-rose-600 border-rose-200'; // R
+                case 'Rutinitas': return 'bg-emerald-100 text-emerald-600 border-emerald-200'; // G
+                case 'Hobi': return 'bg-sky-100 text-sky-600 border-sky-200'; // B
+                case 'Santai': return 'bg-amber-100 text-amber-600 border-amber-200'; // Y
+                default: return 'bg-slate-100 text-slate-600 border-slate-200';
+            }
+        }
+
+        // Render Tasks
+        function renderTasks() {
+            taskList.innerHTML = '';
+            
+            if (tasks.length === 0) {
+                taskList.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-10 text-slate-400 animate-fade-in text-center">
+                        <i class="ph-duotone ph-coffee text-5xl mb-3 text-soft-b"></i>
+                        <p class="text-sm">Jadwal masih kosong nih.</p>
+                        <p class="text-xs mt-1">Yuk tambahin kegiatanmu hari ini!</p>
+                    </div>
+                `;
+                updateCount();
+                return;
+            }
+
+            // Sort tasks by time
+            const sortedTasks = [...tasks].sort((a, b) => a.time.localeCompare(b.time));
+
+            sortedTasks.forEach((task) => {
+                const isCompleted = task.completed;
+                const catColors = getCategoryColor(task.category);
+                
+                // Secure task text from basic XSS by creating text node or replacing tags
+                const safeTaskText = task.text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+                const taskEl = document.createElement('div');
+                taskEl.className = `group bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between gap-4 animate-fade-in transition-all duration-300 hover:shadow-md ${isCompleted ? 'bg-slate-50' : ''}`;
+                
+                taskEl.innerHTML = `
+                    <div class="flex items-center gap-4 flex-1 overflow-hidden">
+                        <button onclick="toggleTask('${task.id}')" class="flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${isCompleted ? 'bg-emerald-400 border-emerald-400 text-white' : 'border-slate-300 text-transparent hover:border-emerald-300'}">
+                            <i class="ph-bold ph-check text-xs"></i>
+                        </button>
+                        
+                        <div class="flex-1 truncate">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                    <i class="ph-bold ph-clock"></i> ${task.time}
+                                </span>
+                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-md border ${catColors}">
+                                    ${task.category}
+                                </span>
+                            </div>
+                            <p class="text-sm font-medium text-slate-700 truncate ${isCompleted ? 'task-done' : ''}">
+                                ${safeTaskText}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <button onclick="deleteTask('${task.id}')" class="flex-shrink-0 w-8 h-8 rounded-full bg-rose-50 text-rose-400 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-rose-100 hover:text-rose-600 focus:opacity-100">
+                        <i class="ph-bold ph-trash"></i>
+                    </button>
+                `;
+                taskList.appendChild(taskEl);
+            });
+
+            updateCount();
+        }
+
+        // Update Counter
+        function updateCount() {
+            const total = tasks.length;
+            const completed = tasks.filter(t => t.completed).length;
+            taskCount.textContent = `${completed}/${total} Selesai`;
+            
+            if(total > 0 && total === completed) {
+                taskCount.classList.add('bg-emerald-100', 'text-emerald-600');
+                taskCount.classList.remove('bg-white', 'text-slate-500');
+            } else {
+                taskCount.classList.remove('bg-emerald-100', 'text-emerald-600');
+                taskCount.classList.add('bg-white', 'text-slate-500');
+            }
+        }
+
+        // Add Task logic
+        taskForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const newTask = {
+                id: Date.now().toString(),
+                text: taskInput.value.trim(),
+                time: timeInput.value,
+                category: categoryInput.value,
+                completed: false
+            };
+
+            tasks.push(newTask);
+            saveTasks();
+            renderTasks();
+
+            // Reset inputs except category
+            taskInput.value = '';
+            timeInput.value = '';
+            taskInput.focus();
+        });
+
+        // Toggle Complete
+        window.toggleTask = (id) => {
+            tasks = tasks.map(task => {
+                if (task.id === id) {
+                    return { ...task, completed: !task.completed };
+                }
+                return task;
+            });
+            saveTasks();
+            renderTasks();
+        };
+
+        // Delete Task
+        window.deleteTask = (id) => {
+            if(confirm('Yakin mau hapus jadwal ini?')) {
+                tasks = tasks.filter(task => task.id !== id);
+                saveTasks();
+                renderTasks();
+            }
+        };
+
+        // Initialize App
+        setupHeader();
+        renderTasks();
+
+        // Update greeting every minute just in case
+        setInterval(setupHeader, 60000);
+    </script>
+</body>
+</html>
